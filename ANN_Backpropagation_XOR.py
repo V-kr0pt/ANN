@@ -32,3 +32,4 @@ def feedforward(x):
     #camada de saída
     output_net = np.dot(hidden_output.T, W_output)
     output = sigmoid(output_net)
+    return output
