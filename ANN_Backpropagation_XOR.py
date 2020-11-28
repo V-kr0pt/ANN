@@ -13,23 +13,47 @@ y = np.array([[0],[1],[1],[0]]) #saída esperada
 def sigmoid(x, diff=False):
     
     if diff:
+        #derivada da função sigmoid
         return x * (1 - x)
     else:
+        #função sigmoid
         return 1/(1 + np.exp(-x))
 
 inputLayerNeurons, hiddenLayerNeurons, outputLayerNeurons = 2, 2, 1
 
-#inicializando os pesos
-W_hidden = np.random.uniform(low=-0.1, high=0.1, size= (inputLayerNeurons, hiddenLayerNeurons))
-W_output = np.random.uniform(low=-0.1, high=0.1, size=(hiddenLayerNeurons, outputLayerNeurons))
+class Neural():
+    #inicializando os pesos
+    def __init__(self):
+        self.W_hidden = np.random.uniform(low=-0.1, high=0.1, size= (inputLayerNeurons, hiddenLayerNeurons)) #2x2
+        self.W_output = np.random.uniform(low=-0.1, high=0.1, size=(hiddenLayerNeurons, outputLayerNeurons)) #2x1
 
-#definindo feed forward propagation
-def feedforward(x):
-    #camada escondida
-    hidden_net = np.dot(x, W_hidden)
-    hidden_output = sigmoid(hidden_net)
+    #definindo feed forward propagation
+    def feedForward(self, x):
+        #camada escondida
+        self.hidden_net = np.dot(x, self.W_hidden) # 1x2 * 2x2 
+        self.hidden_output = sigmoid(self.hidden_net) # 1x2
 
-    #camada de saída
-    output_net = np.dot(hidden_output.T, W_output)
-    output = sigmoid(output_net)
-    return output
+        #camada de saída
+        self.output_net = np.dot(self.hidden_output.T, self.W_output) # 1x2 * 2x1
+        output = sigmoid(self.output_net) # 1x1
+
+        return output
+
+    #definindo feed backward propagation
+    def feedBackward(self, x, learning_rate, expected_out, output):
+        #erro da camada de saída
+        self.error = (expected_out - output) # 1x1
+        self.delta_output = self.error * sigmoid(output, diff=True) #1x1
+        
+        #erro da camda escondida
+        self.hidden_error = np.dot(self.delta_output, self.W_output.T) # 1x1 * 1x2 
+        self.delta_hidden = self.hidden_error * sigmoid(self.hidden_output, diff=True) #1x2
+
+        #atualizando os pesos
+        self.W_output += learning_rate * np.dot(self.hidden_output.T, self.delta_output) # 2x1 * 1x1 
+        self.W_hidden += learning_rate * np.dot(x.T, self.delta_hidden) #2x1 * 1x2 
+
+if __name__ == '__main__':
+    NN = Neural()
+    output = NN.feedForward(X[0])
+    print (output)
