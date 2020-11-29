@@ -45,7 +45,7 @@ class Neural():
         self.error = (expected_out - output) # 1x1
         self.delta_output = self.error * sigmoid(output, diff=True) #1x1
         
-        #erro da camda escondida
+        #erro da camada escondida
         self.hidden_error = np.dot(self.delta_output, self.W_output.T) # 1x1 * 1x2 
         self.delta_hidden = self.hidden_error * sigmoid(self.hidden_output, diff=True) #1x2
 
