@@ -23,11 +23,16 @@ class Neural():
     
     def __init__(self):
         self.inputLayerNeurons, self.hiddenLayerNeurons, self.outputLayerNeurons = 2, 2, 1
+
         #inicializando os pesos
         self.W_hidden = np.random.uniform\
             (low=-0.1, high=0.1, size=(self.inputLayerNeurons, self.hiddenLayerNeurons)) #2x2
         self.W_output = np.random.uniform\
             (low=-0.1, high=0.1, size=(self.hiddenLayerNeurons, self.outputLayerNeurons)) #2x1
+        
+        #inicializando os biais
+        self.bias_hidden = np.random.uniform(size=(1, self.hiddenLayerNeurons))
+        self.bias_output = np.random.uniform(size=(1, self.outputLayerNeurons))
 
     #definindo feed forward propagation
     def feedForward(self, x):
