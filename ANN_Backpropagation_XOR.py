@@ -53,6 +53,13 @@ class Neural():
         self.W_output += learning_rate * np.dot(self.hidden_output.T, self.delta_output) # 2x1 * 1x1 
         self.W_hidden += learning_rate * np.dot(x.T, self.delta_hidden) #2x1 * 1x2 
 
+    def train(self, epochs, learning_rate, expected_out, X, y):
+        for i,x in enumerate(X):
+            for _ in epochs:
+                self.output = self.feedForward(x)
+                self.feedBackward(x, learning_rate, expected_out, y[i])
+
+
 if __name__ == '__main__':
     NN = Neural()
     output = NN.feedForward(X[0])
