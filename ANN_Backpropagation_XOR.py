@@ -31,12 +31,13 @@ class Neural():
 
     #definindo feed forward propagation
     def feedForward(self, x):
+        
         #camada escondida
-        self.hidden_net = np.dot(x, self.W_hidden) # 1x2 * 2x2 
+        self.hidden_net = np.dot(x.T, self.W_hidden) # 1x2 * 2x2 -> 1x2
         self.hidden_output = sigmoid(self.hidden_net) # 1x2
 
         #camada de saída
-        self.output_net = np.dot(self.hidden_output.T, self.W_output) # 1x2 * 2x1
+        self.output_net = np.dot(self.hidden_output, self.W_output) # 1x2 * 2x1 -> 1x1
         output = sigmoid(self.output_net) # 1x1
 
         return output
@@ -48,23 +49,29 @@ class Neural():
         self.delta_output = self.error * sigmoid(output, diff=True) #1x1
         
         #erro da camada escondida
-        self.hidden_error = np.dot(self.delta_output, self.W_output.T) # 1x1 * 1x2 
+        self.hidden_error = np.dot(self.delta_output, self.W_output.T) # 1x1 * 1x2 -> 1x2
         self.delta_hidden = self.hidden_error * sigmoid(self.hidden_output, diff=True) #1x2
 
         #atualizando os pesos
-        self.W_output += learning_rate * np.dot(self.hidden_output.T, self.delta_output) # 2x1 * 1x1 
-        self.W_hidden += learning_rate * np.dot(x.T, self.delta_hidden) #2x1 * 1x2 
+        self.W_output += learning_rate * np.dot(self.hidden_output.T, self.delta_output) #2x1 * 1x1 -> 2x1 
+        self.W_hidden += learning_rate * np.dot(x, self.delta_hidden) #2x1 * 1x2 -> 2x2
 
     def train(self, epochs, learning_rate, expected_out, X):
-        for x in X:
-            for _ in epochs:
-                self.output = self.feedForward(x)
-                self.feedBackward(x, learning_rate, expected_out, self.output)
+        for i, x in enumerate(X):
+            for _ in range(epochs):
+                self.output = self.feedForward(x.reshape(2,1))
+                self.feedBackward(x.reshape(2,1), learning_rate, expected_out[i], self.output)
 
 
 if __name__ == '__main__':
     NN = Neural()
     #treinando a rede:
-    epochs = 10000
-    learning_rate = 0.1
+    epochs = 15000
+    learning_rate = 0.3
     NN.train(epochs, learning_rate, y, X) 
+
+    #avaliando a rede treinada:
+    output = np.zeros((4,1))
+    for i, x in enumerate(X):
+        output[i] = NN.feedForward(x.reshape(2,1))
+    print (output)    
