@@ -66,22 +66,36 @@ class Neural():
         self.bias_hidden += learning_rate * np.sum(self.delta_hidden, axis=0, keepdims=True)
         
 
-    def train(self, epochs, learning_rate, expected_out, X):
-        #for i, x in enumerate(X):
-        for _ in range(epochs):
-            self.output = self.feedForward(X)
-            self.feedBackward(X, learning_rate, expected_out, self.output)
+    def train(self, minimum_error, learning_rate, expected_out, X):
+        #inicializando as épocas e os erros:
+        epochs = 0
+        error = np.ones(y.shape) 
+        while any(error >= minimum_error) :
+            epochs+=1
+            
+            #ajuste de pesos
+            for _ in range(epochs):
+                self.output = self.feedForward(X)
+                self.feedBackward(X, learning_rate, y, self.output)
 
+            self.output = self.feedForward(X)
+            error = abs(self.output - y)
+
+            print(f"época: {epochs}\nerro: \n{error}\n")
+
+        return epochs, error, self.W_hidden, self.W_output, self.bias_hidden, self.bias_output
+            
+            
+            
 
 if __name__ == '__main__':
     NN = Neural()
-    #treinando a rede:
-    epochs = 24000
-    learning_rate = 0.9
-    NN.train(epochs, learning_rate, y, X) 
-
-    #avaliando a rede treinada:
-    output = np.zeros((4,1))
-    #for i, x in enumerate(X):
-    print(NN.feedForward(X))
-    #print (output)    
+    #determinado a taxa de aprendizagem
+    learning_rate = 0.1
+    minimum_error = 0.01
+   
+     #treinando a rede:
+    epoch, error, W_escondido, W_saida, bias_escondido, bias_saida = NN.train(minimum_error, learning_rate, y, X)
+    print(f"a época que atendeu ao requisitado foi: {epoch}\no erro: \n{error}\n")
+    print(f"Os pesos da camada escondida: \n{W_escondido}\n, Os pesos da camada de saída:\n {W_saida}\n")
+    print(f"O bias da camada escondida: \n{bias_escondido}\n, O biais da camada de saída:  \n{bias_saida}\n")
