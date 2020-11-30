@@ -38,11 +38,11 @@ class Neural():
     def feedForward(self, x):
         
         #camada escondida
-        self.hidden_net = np.dot(x.T, self.W_hidden) # 1x2 * 2x2 -> 1x2
+        self.hidden_net = np.dot(x.T, self.W_hidden) + self.bias_hidden # 1x2 * 2x2 -> 1x2
         self.hidden_output = sigmoid(self.hidden_net) # 1x2
 
         #camada de saída
-        self.output_net = np.dot(self.hidden_output, self.W_output) # 1x2 * 2x1 -> 1x1
+        self.output_net = np.dot(self.hidden_output, self.W_output) + self.bias_output # 1x2 * 2x1 -> 1x1
         output = sigmoid(self.output_net) # 1x1
 
         return output
