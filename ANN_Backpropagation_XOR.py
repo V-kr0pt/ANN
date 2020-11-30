@@ -19,13 +19,15 @@ def sigmoid(x, diff=False):
         #função sigmoid
         return 1/(1 + np.exp(-x))
 
-inputLayerNeurons, hiddenLayerNeurons, outputLayerNeurons = 2, 2, 1
-
 class Neural():
-    #inicializando os pesos
+    
     def __init__(self):
-        self.W_hidden = np.random.uniform(low=-0.1, high=0.1, size= (inputLayerNeurons, hiddenLayerNeurons)) #2x2
-        self.W_output = np.random.uniform(low=-0.1, high=0.1, size=(hiddenLayerNeurons, outputLayerNeurons)) #2x1
+        self.inputLayerNeurons, self.hiddenLayerNeurons, self.outputLayerNeurons = 2, 2, 1
+        #inicializando os pesos
+        self.W_hidden = np.random.uniform\
+            (low=-0.1, high=0.1, size=(self.inputLayerNeurons, self.hiddenLayerNeurons)) #2x2
+        self.W_output = np.random.uniform\
+            (low=-0.1, high=0.1, size=(self.hiddenLayerNeurons, self.outputLayerNeurons)) #2x1
 
     #definindo feed forward propagation
     def feedForward(self, x):
@@ -53,14 +55,16 @@ class Neural():
         self.W_output += learning_rate * np.dot(self.hidden_output.T, self.delta_output) # 2x1 * 1x1 
         self.W_hidden += learning_rate * np.dot(x.T, self.delta_hidden) #2x1 * 1x2 
 
-    def train(self, epochs, learning_rate, expected_out, X, y):
-        for i,x in enumerate(X):
+    def train(self, epochs, learning_rate, expected_out, X):
+        for x in X:
             for _ in epochs:
                 self.output = self.feedForward(x)
-                self.feedBackward(x, learning_rate, expected_out, y[i])
+                self.feedBackward(x, learning_rate, expected_out, self.output)
 
 
 if __name__ == '__main__':
     NN = Neural()
-    output = NN.feedForward(X[0])
-    print (output)
+    #treinando a rede:
+    epochs = 10000
+    learning_rate = 0.1
+    NN.train(epochs, learning_rate, y, X) 
