@@ -26,15 +26,13 @@ class Neural():
     def __init__(self):
         self.inputLayerNeurons, self.hiddenLayerNeurons, self.outputLayerNeurons = 2, 2, 1
 
-        #inicializando os pesos
-        self.W_hidden = np.random.uniform\
-            (low=-0.1, high=0.1, size=(self.inputLayerNeurons, self.hiddenLayerNeurons)) #2x2
-        self.W_output = np.random.uniform\
-            (low=-0.1, high=0.1, size=(self.hiddenLayerNeurons, self.outputLayerNeurons)) #2x1
+        #inicializando os pesos       
+        self.W_hidden = np.random.rand(self.inputLayerNeurons, self.hiddenLayerNeurons)
+        self.W_output = np.random.rand(self.hiddenLayerNeurons, self.outputLayerNeurons)
         
         #inicializando os biais
-        self.bias_hidden = np.random.uniform(low=0, high= 0.1, size=(1, self.hiddenLayerNeurons))
-        self.bias_output = np.random.uniform(low=0, high= 0.1, size=(1, self.outputLayerNeurons))
+        self.bias_hidden = np.random.rand(1, self.hiddenLayerNeurons)
+        self.bias_output = np.random.rand(1, self.outputLayerNeurons)
 
     #definindo feed forward propagation
     def feedForward(self, x):
@@ -93,6 +91,8 @@ class Neural():
 
         #plot do gráfico erro abs médio vs época
         plt.plot(range(epochs), error_epochs) 
+        plt.xlabel("Época", size=10)
+        plt.ylabel("Erro", size=10)
         plt.show()
 
         #retorno dos dados da RNA treinada
@@ -105,7 +105,7 @@ class Neural():
 if __name__ == '__main__':
     NN = Neural()
     #determinado a taxa de aprendizagem
-    learning_rate = 7
+    learning_rate = 0.9
     minimum_error = 0.1
    
      #treinando a rede:
