@@ -70,20 +70,21 @@ class Neural():
     def train(self, minimum_error, learning_rate, expected_out, X):
         #inicializando as épocas e os erros:
         epochs = 0
-        error = np.ones(y.shape) 
+        error = np.ones(expected_out.shape) 
         while any(error >= minimum_error) :
+            #contador da época
             epochs+=1
-            
-            #ajuste de pesos
-            for _ in range(epochs):
-                self.output = self.feedForward(X)
-                self.feedBackward(X, learning_rate, y, self.output)
 
+            #ajuste de pesos
             self.output = self.feedForward(X)
-            error =  abs(self.output - y)
+            self.feedBackward(X, learning_rate, expected_out, self.output)
+
+            #cálculo do erro        
+            error =  abs(self.feedForward(X) - expected_out)            
 
             print(f"época: {epochs}\nerro: \n{error}\n")
-
+       
+        #retorno dos dados da RNA treinada
         return epochs, error, self.W_hidden, self.W_output, self.bias_hidden, self.bias_output
             
             
@@ -92,8 +93,8 @@ class Neural():
 if __name__ == '__main__':
     NN = Neural()
     #determinado a taxa de aprendizagem
-    learning_rate = 0.1
-    minimum_error = 0.01
+    learning_rate = 0.9
+    minimum_error = 0.1
    
      #treinando a rede:
     epoch, error, W_escondido, W_saida, bias_escondido, bias_saida = NN.train(minimum_error, learning_rate, y, X)
