@@ -5,16 +5,17 @@ o algoritmo de backpropagation como algoritmo de aprendizagem
 
 import numpy as np
 
-#Input dataset
+#entrada
 X = np.array([[0,0],[0,1],[1,0],[1,1]])
-y = np.array([[0],[1],[1],[0]]) #saída esperada
+#saída esperada
+y = np.array([[0],[1],[1],[0]]) 
 
 #definindo a função de ativação
 def sigmoid(x, diff=False):
     
     if diff:
         #derivada da função sigmoid
-        return x * (1 - x)
+        return sigmoid(x) * (1 - sigmoid(x))
     else:
         #função sigmoid
         return 1/(1 + np.exp(-x))
@@ -38,8 +39,8 @@ class Neural():
     def feedForward(self, x):
         
         #camada escondida
-        self.hidden_net = np.dot(x, self.W_hidden) + self.bias_hidden # 1x2 * 2x2 -> 1x2
-        self.hidden_output = sigmoid(self.hidden_net) # 1x2
+        self.hidden_net = np.dot(x, self.W_hidden) + self.bias_hidden # 4x2 * 2x2  + 1x2 -> 4x2
+        self.hidden_output = sigmoid(self.hidden_net) # 4x2
 
         #camada de saída
         self.output_net = np.dot(self.hidden_output, self.W_output) + self.bias_output # 1x2 * 2x1 -> 1x1
@@ -51,11 +52,11 @@ class Neural():
     def feedBackward(self, x, learning_rate, expected_out, output):
         #erro da camada de saída
         self.error = (expected_out - output) # 1x1
-        self.delta_output = self.error * sigmoid(output, diff=True) #1x1
+        self.delta_output = self.error * sigmoid(self.output_net, diff=True) #1x1
         
         #erro da camada escondida
         self.hidden_error = np.dot(self.delta_output, self.W_output.T) # 1x1 * 1x2 -> 1x2
-        self.delta_hidden = self.hidden_error * sigmoid(self.hidden_output, diff=True) #1x2
+        self.delta_hidden = self.hidden_error * sigmoid(self.hidden_net, diff=True) #1x2
 
         #atualizando os pesos
         self.W_output += learning_rate * np.dot(self.hidden_output.T, self.delta_output) #2x1 * 1x1 -> 2x1 
@@ -79,7 +80,7 @@ class Neural():
                 self.feedBackward(X, learning_rate, y, self.output)
 
             self.output = self.feedForward(X)
-            error = abs(self.output - y)
+            error =  abs(self.output - y)
 
             print(f"época: {epochs}\nerro: \n{error}\n")
 
