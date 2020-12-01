@@ -92,7 +92,7 @@ class Neural():
             print(f"época: {epochs}\nerro: \n{error}\n")
 
         #plot do gráfico erro abs médio vs época
-        plt.plot(range(epochs-1), error_epochs) 
+        plt.plot(range(epochs), error_epochs) 
         plt.show()
 
         #retorno dos dados da RNA treinada
@@ -105,7 +105,7 @@ class Neural():
 if __name__ == '__main__':
     NN = Neural()
     #determinado a taxa de aprendizagem
-    learning_rate = 0.9
+    learning_rate = 7
     minimum_error = 0.1
    
      #treinando a rede:
