@@ -1,6 +1,6 @@
 """
-Esse código é uma tentativa de fazer um multilayer perceptron que implementa a porta lógica XOR utilizando
-o algoritmo de backpropagation como algoritmo de aprendizagem
+Esse código tem o objetivo de elucidar o algoritmo de Backpropagation, de forma a 
+criar uma RNA capaz de se aproximar ao comportamento de uma porta lógica XOR  
 """
 
 import numpy as np
