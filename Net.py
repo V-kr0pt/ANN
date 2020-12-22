@@ -1,37 +1,25 @@
 import numpy as np
 
-class Neural:
+class Net:
     
-    def __init__(self, X, y, hiddenLayerNeurons):
-
-        #inicializando os pesos   
-
-        self.W = []
-        for i, qtd_de_neuronios_na_camada in enumerate(hiddenLayerNeurons):
-            if i == 0:
-                #pesos da primeira camada escondida
-                self.W.append(np.random.rand(X.shape[0], qtd_de_neuronios_na_camada))
-            else:
-                #pesos das camadas escondidas intermediarias
-                self.W.append(np.random.rand(hiddenLayerNeurons[i-1], qtd_de_neuronios_na_camada))
+    def __init__(self, neuronios):
         
-        #pesos da camada de saída
-        self.W.append(np.random.rand(y.shape[0],hiddenLayerNeurons[-1]))
+        #inicializando os pesos (lista de pesos)   
+        self.W = [] #lista de arrays contendo os pesos aleatoriamente iniciados
+        num_de_camadas = len(neuronios)
+        for i in range(num_de_camadas-1):
+            Ws = np.random.rand(neuronios[i], neuronios[i+1]) #pesos randômicos
+            Ws *= 0.1 #garantido pesos inicializados <= |0.1| 
+            self.W.append(Ws)
+            print(self.W)
 
 
-            
-        #self.W_hidden = np.random.rand(self.inputLayerNeurons, self.hiddenLayerNeurons)
-        #self.W_output = np.random.rand(self.hiddenLayerNeurons, self.outputLayerNeurons)
-        
-        #inicializando os biais
-        #self.bias_hidden = np.random.rand(1, self.hiddenLayerNeurons)
-        #self.bias_output = np.random.rand(1, self.outputLayerNeurons)
+if __name__ == '__main__':
+    NN = Net([1,5,5,1])
 
 
-
-
-
-"""     #definindo feed forward propagation
+"""
+    #definindo feed forward propagation
     def feedForward(self, x):
         
         #camada escondida
