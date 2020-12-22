@@ -21,7 +21,7 @@ def sigmoid(x, diff=False):
         #função sigmoid
         return 1/(1 + np.exp(-x))
 
-class Neural():
+class Neural:
     
     def __init__(self):
         self.inputLayerNeurons, self.hiddenLayerNeurons, self.outputLayerNeurons = 2, 2, 1
