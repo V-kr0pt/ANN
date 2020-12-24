@@ -23,13 +23,13 @@ class Net:
         output = self.X #generalizando, a saída do neurônio de entrada é a prórpia entrada 
         for camada in range(self.num_de_camadas):
             input_tf = np.dot(output, self.W[camada].T)
-            output = input_tf #fa.ReLu(input_tf)            
+            output = fa.ReLu(input_tf)            
         return output
         
 
 
 if __name__ == '__main__':
-    NN = Net([2,5,5,3])
+    NN = Net([2,5,5,1])
     X = np.array([[0,0],[0,1],[1,0],[1,1]])
     output = NN.feedForward(X)
     print(output)
