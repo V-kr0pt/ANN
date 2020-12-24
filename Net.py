@@ -5,20 +5,34 @@ class Net:
     
     def __init__(self, neuronios):
         
-        #inicializando os pesos (lista de pesos)   
+        #inicializando os pesos e bias    
         self.W = [] #lista de arrays contendo os pesos aleatoriamente iniciados
-        self.num_de_camadas = len(neuronios-1)
+        self.biases = [] #lista de arrays contendo os bias aleatoriamente iniciados
+
+        self.num_de_camadas = len(neuronios)-1
         for i in range(self.num_de_camadas):
             W = np.random.rand(neuronios[i+1], neuronios[i]) #pesos randômicos
-            #biases = np.random.rand(neuronios[i]) #bias randômicos
             W *= 0.1 #garantido pesos inicializados <= |0.1| 
             self.W.append(W)
 
-   
+            biases = np.random.rand(neuronios[i+1]) #bias randômicos            
+            self.biases.append(biases)
+
+    def feedForward(self, X):
+        self.X = X   
+        output = self.X #generalizando, a saída do neurônio de entrada é a prórpia entrada 
+        for camada in range(self.num_de_camadas):
+            input_tf = np.dot(output, self.W[camada].T)
+            output = input_tf #fa.ReLu(input_tf)            
+        return output
+        
 
 
 if __name__ == '__main__':
-    NN = Net([1,5,5,1])
+    NN = Net([2,5,5,3])
+    X = np.array([[0,0],[0,1],[1,0],[1,1]])
+    output = NN.feedForward(X)
+    print(output)
 
 
 """
