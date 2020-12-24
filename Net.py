@@ -1,4 +1,5 @@
 import numpy as np
+import Funcoes_de_Ativacao as fa
 
 class Net:
     
@@ -6,12 +7,14 @@ class Net:
         
         #inicializando os pesos (lista de pesos)   
         self.W = [] #lista de arrays contendo os pesos aleatoriamente iniciados
-        num_de_camadas = len(neuronios)
-        for i in range(num_de_camadas-1):
-            Ws = np.random.rand(neuronios[i], neuronios[i+1]) #pesos randômicos
-            Ws *= 0.1 #garantido pesos inicializados <= |0.1| 
-            self.W.append(Ws)
-            print(self.W)
+        self.num_de_camadas = len(neuronios-1)
+        for i in range(self.num_de_camadas):
+            W = np.random.rand(neuronios[i+1], neuronios[i]) #pesos randômicos
+            #biases = np.random.rand(neuronios[i]) #bias randômicos
+            W *= 0.1 #garantido pesos inicializados <= |0.1| 
+            self.W.append(W)
+
+   
 
 
 if __name__ == '__main__':
