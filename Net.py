@@ -21,11 +21,14 @@ class Net:
     def feedForward(self, X):
         self.X = X   
         output = self.X #generalizando, a saída do neurônio de entrada é a prórpia entrada 
+        
         for camada in range(self.num_de_camadas):
-            input_tf = np.dot(output, self.W[camada].T)
+            input_tf = np.dot(output, self.W[camada].T) + self.biases[camada]
             output = fa.ReLu(input_tf)            
         return output
         
+    def feedBackward(self, target, output, learning_rate):
+        pass
 
 
 if __name__ == '__main__':
