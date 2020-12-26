@@ -80,13 +80,12 @@ class Net:
             self.biases[conexao] = \
                 self.biases[conexao]  + learning_rate * np.sum(e, axis=0, keepdims=True)
 
-            error = np.dot(e, self.W[conexao]).sum() #erro da camada escondida
-
-            
-           
+            error = np.dot(e, self.W[conexao]).sum() #erro da camada escondida          
 
         print("Backward sucesso!")
-            
+
+        def train():
+            pass      
 
             
 
