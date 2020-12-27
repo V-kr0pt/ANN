@@ -106,13 +106,8 @@ class Net:
             #c.c., faz o treinemento online:
             for i,x in enumerate(X): 
                 output = NN.feedForward(x)
-                NN.feedBackward(output, y[i], learning_rate)
-            
-           
+                NN.feedBackward(output, y[i], learning_rate)        
 
-            
-            
-            
 
 
 if __name__ == '__main__':
