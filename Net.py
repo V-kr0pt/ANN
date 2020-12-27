@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 import Funcoes_de_Ativacao as fa
 
 class Net:
@@ -17,8 +18,9 @@ class Net:
         
         #As conexões existem entre duas camadas, camada e camada+1.        
         for camada in self.conexoes:
-         
-            #pesos randômicos
+            #camada = 0 : vetor de entradas
+
+            #inicializando os pesos randômicamente
             W = np.random.rand(neuronios[camada+1], neuronios[camada]) 
             W *= 0.1 #garantido pesos inicializados <= |0.1| 
             self.W.append(W) #salva na lista
@@ -27,50 +29,44 @@ class Net:
             self.biases.append(biases) #salva na lista
         
 
-    def feedForward(self, X):
-        self.X = X 
+    def feedForward(self, x):
+        self.x = np.array([x]) 
 
         #listas para deixar salvo as saídas e as somas das entradas dos neurônios
         self.output = [] 
         self.sum_fa = []
         
         #generalizando, a saída do neurônio de entrada é a prórpia entrada 
-        self.output.append(self.X) 
+        self.output.append(self.x) 
                 
         for conexao in self.conexoes:
-                    
-            sum_fa =  np.dot(self.output[conexao], self.W[conexao].T) + self.biases[conexao] 
+             
+            sum_fa =  np.dot(self.W[conexao], self.output[conexao]) + self.biases[conexao]             
             output = fa.ReLu(sum_fa)           
-
+            
             self.sum_fa.append(sum_fa)
             self.output.append(output)        
         
         #retorna a saída da camada de saída
         return output
         
-    def feedBackward(self, target, learning_rate):
+
+    def feedBackward(self, output, target, learning_rate):
         
         #invertendo a lista self.conexoes, para indicar o caminho de retropropagação
-        b_conexoes = [self.num_de_conexoes-i-1 for i in self.conexoes]
+        b_conexoes = [(self.num_de_conexoes-1) - i for i in self.conexoes]
 
         #Foi necessário a retirada de 1 unidade de self.num_de_conexoes para que b_conexoes  
         #representasse uma lista contabilizando o número de conexões com índice iniciando em 0  
 
-        #a camada de saída é a camada posterior a última conexão        
-        camada_de_saida = b_conexoes[0] + 1
-
         #a variável error da camada de saída 
-        #é dada pela diferença entre o target e o a saída do neurônio       
-        error = target - self.output[camada_de_saida] #erro da camada de saída        
+        #é dada pela diferença entre o target e o a saída do neurônio        
+        error = target - output #erro da camada de saída        
         
         for conexao in b_conexoes:  
             dif_FA = fa.ReLu(self.sum_fa[conexao], diff=True)
-            e = np.dot(error, dif_FA)
-            print(error.shape)
-            print(dif_FA.shape)
-            print(f"{self.output[conexao].shape} \n")          
-
-            
+            e = np.dot(error, dif_FA)                
+        
             #atualização dos pesos 
             self.W[conexao] = \
                 self.W[conexao] + learning_rate * np.dot(self.output[conexao+1], e)
@@ -82,12 +78,37 @@ class Net:
 
             error = np.dot(e, self.W[conexao]).sum() #erro da camada escondida          
 
-        print("Backward sucesso!")
+        
 
-        def train():
-            pass      
+    def train(self, X, y, learning_rate=0.1, goal= 1e-2, epochs = 10**3):
+
+
+        #treinamento
+        for _ in range(epochs):
+
+            self.train_error = np.array([])
+
+            #verifica os erros
+            for i,x in enumerate(X): 
+                
+                output = NN.feedForward(x)
+                
+                tr_error = abs(y[i]-output)
+                     
+                
+                self.train_error = np.append(self.train_error, tr_error)
+
+            #se todos os erros forem menores ou iguais ao desejado, para o treinamento
+            if(self.train_error.max() <= goal):
+                break
 
             
+            #c.c., faz o treinemento online:
+            for i,x in enumerate(X): 
+                output = NN.feedForward(x)
+                NN.feedBackward(output, y[i], learning_rate)
+            
+           
 
             
             
@@ -95,13 +116,49 @@ class Net:
 
 
 if __name__ == '__main__':
-    NN = Net([2,3,3,1])
-    X = np.array([[0,0],[0,1],[1,0],[1,1]])
-    y = np.array([[0],[1],[1],[0]])
-    for i,x in enumerate(X): 
-        print(x)       
-        output = NN.feedForward(x)
-        NN.feedBackward(y[i], 0.1)
+    
+    t_d = np.linspace(0, 2*np.pi, 101) #ângulo em radianos  
+    t = np.random.permutation(t_d) #permutando-o randomicamente
+    y = np.sin(t)    #Função seno
+    
+
+    #treino 70% - teste 30%
+
+    #Os vetores de treino:
+    Xtr = t[0:70]
+    ytr = y[0:70]
+
+    #Os vetores de teste:
+    Xts = t[71:101] 
+    yts = y[71:101]
+
+    for i in range(50):
+        #Topologia da RNA
+        NN = Net([1,10,5,1])        
+        
+        #Treina a RNA
+        NN.train(Xtr, ytr, learning_rate=0.5, goal=1e-3, epochs=10**3)
+
+        #Teste da RNA
+        output = np.array([])
+
+        for i,x in enumerate(Xts):
+            output = np.append(output, NN.feedForward(x))
+        
+        error_ts = abs(yts - output)
+        print(error_ts.max())
+        
+        if(error_ts.max() <= 0.02):
+            NNBest = NN
+            print("ACHOU!")
+            break
+
+    
+    #plt.stem(Xtr, ytr)
+    #plt.stem()
+    #plt.stem(t_d, NNBest.feedForward(t_d))
+
+        
 
 
 """
