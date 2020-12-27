@@ -25,7 +25,7 @@ class Net:
             W *= 0.1 #garantido pesos inicializados <= |0.1| 
             self.W.append(W) #salva na lista
 
-            biases = np.random.rand(neuronios[camada+1]) #bias randômicos            
+            biases =  0.1 * np.random.rand(neuronios[camada+1]) #bias randômicos            
             self.biases.append(biases) #salva na lista
         
 
@@ -42,7 +42,7 @@ class Net:
         for conexao in self.conexoes:
              
             sum_fa =  np.dot(self.W[conexao], self.output[conexao]) + self.biases[conexao]             
-            output = fa.ReLu(sum_fa)           
+            output = fa.tansig(sum_fa)           
             
             self.sum_fa.append(sum_fa)
             self.output.append(output)        
@@ -64,7 +64,7 @@ class Net:
         error = target - output #erro da camada de saída        
         
         for conexao in b_conexoes:  
-            dif_FA = fa.ReLu(self.sum_fa[conexao], diff=True)
+            dif_FA = fa.tansig(self.sum_fa[conexao], diff=True)
             e = np.dot(error, dif_FA)                
         
             #atualização dos pesos 
@@ -93,7 +93,7 @@ class Net:
                 
                 output = NN.feedForward(x)
                 
-                tr_error = abs(y[i]-output)
+                tr_error = 1/2*(y[i]-output)**2
                      
                 
                 self.train_error = np.append(self.train_error, tr_error)
@@ -132,7 +132,7 @@ if __name__ == '__main__':
         NN = Net([1,10,5,1])        
         
         #Treina a RNA
-        NN.train(Xtr, ytr, learning_rate=0.5, goal=1e-3, epochs=10**3)
+        NN.train(Xtr, ytr, learning_rate=0.1, goal=1e-3, epochs=10**3)
 
         #Teste da RNA
         output = np.array([])
@@ -149,9 +149,9 @@ if __name__ == '__main__':
             break
 
     
-    #plt.stem(Xtr, ytr)
-    #plt.stem()
-    #plt.stem(t_d, NNBest.feedForward(t_d))
+    plt.stem(Xtr, ytr, 'b', markerfmt='bo', label='treino')
+    plt.stem(Xts, yts,'g', markerfmt='go', label='teste')
+    plt.stem(Xts, output)
 
         
 

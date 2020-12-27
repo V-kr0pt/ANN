@@ -8,6 +8,12 @@ def ReLu(x, diff=False):
         output = np.where(x <= 0, 0, x) #retorna 0 aonde x for <=0 e x do contrário
     
     return output
+
+def tansig(x, diff=False):
+    if diff:
+        return 1/(np.cosh(x)**2)
+    else:
+        return np.tanh(x) 
                 
 if __name__ == "__main__":
     x = np.array([[-2,0,-1,2,1,0,5,-10], [15,0,-1,2,1,2,5,-15]])
