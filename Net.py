@@ -152,38 +152,6 @@ if __name__ == '__main__':
     plt.stem(Xtr, ytr, 'b', markerfmt='bo', label='treino')
     plt.stem(Xts, yts,'g', markerfmt='go', label='teste')
     plt.stem(Xts, output)
-
         
 
 
-"""
-    #definindo feed forward propagation
-    def feedForward(self, x):
-        
-        #camada escondida
-        self.hidden_net = np.dot(x, self.W_hidden) + self.bias_hidden 
-        self.hidden_output = sigmoid(self.hidden_net) 
-
-        #camada de saída
-        self.output_net = np.dot(self.hidden_output, self.W_output) + self.bias_output 
-        output = sigmoid(self.output_net) 
-
-        return output
-
-    #definindo feed backward propagation
-    def feedBackward(self, x, learning_rate, expected_out, output):
-        #erro da camada de saída
-        self.error = (expected_out - output) 
-        self.delta_output = self.error * sigmoid(self.output_net, diff=True) 
-        
-        #erro da camada escondida
-        self.hidden_error = np.dot(self.delta_output, self.W_output.T) 
-        self.delta_hidden = self.hidden_error * sigmoid(self.hidden_net, diff=True) 
-
-        #atualizando os pesos
-        self.W_output += learning_rate * np.dot(self.hidden_output.T, self.delta_output) 
-        self.W_hidden += learning_rate * np.dot(x.T, self.delta_hidden) 
-
-        #atualizando os bias
-        self.bias_output += learning_rate * np.sum(self.delta_output, axis=0, keepdims=True)  
-        self.bias_hidden += learning_rate * np.sum(self.delta_hidden, axis=0, keepdims=True) """
