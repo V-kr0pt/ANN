@@ -7,8 +7,8 @@ class Net:
     def __init__(self, neuronios):
         
         #inicializando os pesos e bias    
-        self.W = [] #lista de arrays contendo os pesos aleatoriamente iniciados
-        self.biases = [] #lista de arrays contendo os bias aleatoriamente iniciados
+        self.W = [] #lista de arrays que irá conter os pesos aleatoriamente iniciados
+        self.biases = [] #lista de arrays que irá conter os bias aleatoriamente iniciados
 
         #contabiliza o número de conexões que existem na rede 
         self.num_de_conexoes = len(neuronios) - 1 
@@ -16,7 +16,7 @@ class Net:
         #criando uma lista de 0 até o número de conexões
         self.conexoes = list(range(self.num_de_conexoes)) 
         
-        #As conexões existem entre duas camadas, camada e camada+1.        
+        #As conexões existem entre duas camadas: camada e camada+1.        
         for camada in self.conexoes:
             #camada = 0 : vetor de entradas
 
@@ -60,8 +60,9 @@ class Net:
         #representasse uma lista contabilizando o número de conexões com índice iniciando em 0  
 
         #a variável error da camada de saída 
-        #é dada pela diferença entre o target e o a saída do neurônio        
-        error = target - output #erro da camada de saída        
+        #é dada pela diferença entre o target e o a saída do neurônio  
+              
+        error = target - output    #erro da camada de saída        
         
         for conexao in b_conexoes:  
             dif_FA = fa.tansig(self.sum_fa[conexao], diff=True)
@@ -93,8 +94,7 @@ class Net:
                 
                 output = NN.feedForward(x)
                 
-                tr_error = 1/2*(y[i]-output)**2
-                     
+                tr_error = 1/2*(y[i]-output)**2                     
                 
                 self.train_error = np.append(self.train_error, tr_error)
 
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         #Teste da RNA
         output = np.array([])
 
-        for i,x in enumerate(Xts):
+        for x in Xts:
             output = np.append(output, NN.feedForward(x))
         
         error_ts = abs(yts - output)
@@ -151,7 +151,8 @@ if __name__ == '__main__':
     
     plt.stem(Xtr, ytr, 'b', markerfmt='bo', label='treino')
     plt.stem(Xts, yts,'g', markerfmt='go', label='teste')
-    plt.stem(Xts, output)
-        
+    plt.stem(Xts, output, 'r', markerfmt='ro', label='output')
+    plt.legend()
+    plt.show()
 
 
