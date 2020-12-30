@@ -67,10 +67,21 @@ class Net:
         for conexao in b_conexoes:  
             dif_FA = fa.tansig(self.sum_fa[conexao], diff=True)
             e = np.dot(error, dif_FA)                
-        
             #atualização dos pesos 
+            
+            #transformando vetores de saída em matrizes coluna 
+            output_rows = self.output[conexao].shape[0]
+            output_mat = self.output[conexao].reshape((output_rows,1))
+
+            #transformando os vetores "e", em matrizes coluna
+            if e.shape:  #se for um vetor
+                e_rows = e.shape[0] #recebe o número de linhas
+                e_mat = e.reshape((e_rows,1)) #retorna uma matriz coluna
+            else:
+                e_mat = e
+
             self.W[conexao] = \
-                self.W[conexao] + learning_rate * np.dot(self.output[conexao+1], e)
+                self.W[conexao] + learning_rate * np.dot(e_mat, output_mat.T)
             
 
             #atualização dos biais da camada de saída
@@ -98,6 +109,7 @@ class Net:
                 
                 self.train_error = np.append(self.train_error, tr_error)
 
+            print(self.train_error.max())
             #se todos os erros forem menores ou iguais ao desejado, para o treinamento
             if(self.train_error.max() <= goal):
                 break
@@ -141,7 +153,7 @@ if __name__ == '__main__':
             output = np.append(output, NN.feedForward(x))
         
         error_ts = abs(yts - output)
-        print(error_ts.max())
+        #print(error_ts.max())
         
         if(error_ts.max() <= 0.02):
             NNBest = NN
