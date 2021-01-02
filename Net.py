@@ -112,14 +112,8 @@ class Net:
 
             #se todos os erros forem menores ou iguais ao desejado, para o treinamento
             if(self.train_error.max() <= goal):
-                    break
-            
-            
-            
-
-
-        plt.plot(range(NN.train_error_max.shape[0]), NN.train_error_max)
-        plt.show()
+                    break  
+        
 
 
 
@@ -147,6 +141,12 @@ if __name__ == '__main__':
         
         #Treina a RNA
         NN.train(Xtr, ytr, learning_rate=0.1, goal=1e-3, epochs=10**3)
+        
+        plt.plot(range(NN.train_error_max.shape[0]), NN.train_error_max, label=f"treinamento {i}")
+    
+    plt.legend()
+    plt.show()
+
         
         
 
