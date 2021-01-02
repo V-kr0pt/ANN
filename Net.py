@@ -41,7 +41,7 @@ class Net:
                 
         for camada in self.camadas:
              
-            sum_fa =  np.dot(self.W[camada], self.output[camada]) + self.biases[camada]             
+            sum_fa =  np.dot(self.W[camada], self.output[camada]) + self.biases[camada]       
             output = fa.tansig(sum_fa)           
             
             self.sum_fa.append(sum_fa)
@@ -58,22 +58,24 @@ class Net:
               
         error = target - output       #erro da camada de saída        
         
+        
         for camada in reversed(self.camadas):  
             dif_FA = fa.tansig(self.sum_fa[camada], diff=True)
-            e = np.dot(error, dif_FA)                
+            e = np.dot(error, dif_FA)
+                            
             #atualização dos pesos 
             
             #transformando vetores de saída em matrizes coluna 
             output_rows = self.output[camada].shape[0]
             output_mat = self.output[camada].reshape((output_rows,1))
-
+            
             #transformando os vetores "e", em matrizes coluna
             if e.shape:  #se for um vetor
                 e_rows = e.shape[0] #recebe o número de linhas
                 e_mat = e.reshape((e_rows,1)) #retorna uma matriz coluna
             else:
                 e_mat = e
-
+            
             self.W[camada] = \
                 self.W[camada] + learning_rate * np.dot(e_mat, output_mat.T)
             
@@ -86,34 +88,43 @@ class Net:
             
         
 
-    def train(self, X, y, learning_rate=0.1, goal= 1e-2, epochs = 10**3):
-
+    def train(self, X, y, learning_rate=1e-3, goal= 1e-2, epochs = 10**3):
+        
+        
+        #array que irá conter os erros máximos do processo de treino
         self.train_error_max = np.array([])
 
         #treinamento
-        for _ in range(epochs):
+        for epoca in range(epochs):
 
             self.train_error = np.array([])
-            
 
-            #verifica os erros
+            #Processo de atualização dos pesos
             for i,x in enumerate(X): 
                 
-                output = NN.feedForward(x)
+                output = self.feedForward(x)
                 
                 tr_error = 1/2*(y[i]-output)**2                     
                 
                 self.train_error = np.append(self.train_error, tr_error)
 
-                NN.feedBackward(output, y[i], learning_rate)
+                self.feedBackward(output, y[i], learning_rate)
 
             print(self.train_error.max())
             self.train_error_max = np.append(self.train_error_max, self.train_error.max())
 
-            #se todos os erros forem menores ou iguais ao desejado, para o treinamento
-            if(self.train_error.max() <= goal):
-                    break  
-        
+            #parada se o erro for menor ou igual ao desejado
+            if(self.train_error_max[-1] <= goal):
+                    break
+            
+            #parada se a taxa de decrescimo do erro for menor que 0.001
+            if(epoca >= 1): 
+
+                taxa_de_decrescimo = self.train_error_max[-2] - self.train_error_max[-1]    
+               
+                if(taxa_de_decrescimo < 1e-3):
+                    break
+                    
 
 
 
@@ -135,12 +146,12 @@ if __name__ == '__main__':
     Xts = t[71:101] 
     yts = y[71:101]
 
-    for i in range(3):
+    for i in range(6):
         #Topologia da RNA
-        NN = Net([1,10,5,1])        
+        NN = Net([1,5,5,1])        
         
         #Treina a RNA
-        NN.train(Xtr, ytr, learning_rate=0.1, goal=1e-3, epochs=10**3)
+        NN.train(Xtr, ytr, learning_rate=1e-5, goal=1e-2, epochs=10**4)
         
         plt.plot(range(NN.train_error_max.shape[0]), NN.train_error_max, label=f"treinamento {i}")
     
