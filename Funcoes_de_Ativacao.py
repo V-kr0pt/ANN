@@ -11,8 +11,7 @@ def ReLu(x, diff=False):
 
 def tansig(x, diff=False):
     if diff:
-        tanh = np.tanh(x)
-        return (1 - tanh) * (1 + tanh)
+        return (1 - np.tanh(x)**2)
     else:
         return np.tanh(x) 
                 
