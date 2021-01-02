@@ -56,7 +56,7 @@ class Net:
         #a variável error da camada de saída 
         #é dada pela diferença entre o target e o a saída do neurônio  
               
-        error = target - output    #erro da camada de saída        
+        error = target - output       #erro da camada de saída        
         
         for camada in reversed(self.camadas):  
             dif_FA = fa.tansig(self.sum_fa[camada], diff=True)
@@ -83,16 +83,18 @@ class Net:
                 self.biases[camada]  + learning_rate * np.sum(e, axis=0, keepdims=True)
 
             error = np.dot(e, self.W[camada]).sum() #erro da camada escondida          
-
+            
         
 
     def train(self, X, y, learning_rate=0.1, goal= 1e-2, epochs = 10**3):
 
+        self.train_error_max = np.array([])
 
         #treinamento
         for _ in range(epochs):
 
             self.train_error = np.array([])
+            
 
             #verifica os erros
             for i,x in enumerate(X): 
@@ -103,16 +105,22 @@ class Net:
                 
                 self.train_error = np.append(self.train_error, tr_error)
 
+                NN.feedBackward(output, y[i], learning_rate)
+
             print(self.train_error.max())
+            self.train_error_max = np.append(self.train_error_max, self.train_error.max())
+
             #se todos os erros forem menores ou iguais ao desejado, para o treinamento
             if(self.train_error.max() <= goal):
-                break
-
+                    break
             
-            #c.c., faz o treinemento online:
-            for i,x in enumerate(X): 
-                output = NN.feedForward(x)
-                NN.feedBackward(output, y[i], learning_rate)        
+            
+            
+
+
+        plt.plot(range(NN.train_error_max.shape[0]), NN.train_error_max)
+        plt.show()
+
 
 
 
@@ -133,14 +141,16 @@ if __name__ == '__main__':
     Xts = t[71:101] 
     yts = y[71:101]
 
-    for i in range(50):
+    for i in range(3):
         #Topologia da RNA
         NN = Net([1,10,5,1])        
         
         #Treina a RNA
         NN.train(Xtr, ytr, learning_rate=0.1, goal=1e-3, epochs=10**3)
+        
+        
 
-        #Teste da RNA
+"""         #Teste da RNA
         output = np.array([])
 
         for x in Xts:
@@ -160,5 +170,5 @@ if __name__ == '__main__':
     plt.stem(Xts, output, 'r', markerfmt='ro', label='output')
     plt.legend()
     plt.show()
-
+ """
 
