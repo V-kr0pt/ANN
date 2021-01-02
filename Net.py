@@ -10,14 +10,14 @@ class Net:
         self.W = [] #lista de arrays que irá conter os pesos aleatoriamente iniciados
         self.biases = [] #lista de arrays que irá conter os bias aleatoriamente iniciados
 
-        #contabiliza o número de conexões que existem na rede 
-        self.num_de_conexoes = len(neuronios) - 1 
+        #contabiliza o número de camadas retirando uma
+        self.num_de_camadas = len(neuronios) - 1 
         
-        #criando uma lista de 0 até o número de conexões
-        self.conexoes = list(range(self.num_de_conexoes)) 
+        #criando uma lista de 0 até o número de camadas
+        self.camadas = list(range(self.num_de_camadas)) 
         
         #As conexões existem entre duas camadas: camada e camada+1.        
-        for camada in self.conexoes:
+        for camada in self.camadas:
             #camada = 0 : vetor de entradas
 
             #inicializando os pesos randômicamente
@@ -39,9 +39,9 @@ class Net:
         #generalizando, a saída do neurônio de entrada é a prórpia entrada 
         self.output.append(self.x) 
                 
-        for conexao in self.conexoes:
+        for camada in self.camadas:
              
-            sum_fa =  np.dot(self.W[conexao], self.output[conexao]) + self.biases[conexao]             
+            sum_fa =  np.dot(self.W[camada], self.output[camada]) + self.biases[camada]             
             output = fa.tansig(sum_fa)           
             
             self.sum_fa.append(sum_fa)
@@ -54,7 +54,7 @@ class Net:
     def feedBackward(self, output, target, learning_rate):
         
         #invertendo a lista self.conexoes, para indicar o caminho de retropropagação
-        b_conexoes = [(self.num_de_conexoes-1) - i for i in self.conexoes]
+        b_camadas = [(self.num_de_camadas-1) - i for i in self.camadas]
 
         #Foi necessário a retirada de 1 unidade de self.num_de_conexoes para que b_conexoes  
         #representasse uma lista contabilizando o número de conexões com índice iniciando em 0  
@@ -64,14 +64,14 @@ class Net:
               
         error = target - output    #erro da camada de saída        
         
-        for conexao in b_conexoes:  
-            dif_FA = fa.tansig(self.sum_fa[conexao], diff=True)
+        for camada in b_camadas:  
+            dif_FA = fa.tansig(self.sum_fa[camada], diff=True)
             e = np.dot(error, dif_FA)                
             #atualização dos pesos 
             
             #transformando vetores de saída em matrizes coluna 
-            output_rows = self.output[conexao].shape[0]
-            output_mat = self.output[conexao].reshape((output_rows,1))
+            output_rows = self.output[camada].shape[0]
+            output_mat = self.output[camada].reshape((output_rows,1))
 
             #transformando os vetores "e", em matrizes coluna
             if e.shape:  #se for um vetor
@@ -80,15 +80,15 @@ class Net:
             else:
                 e_mat = e
 
-            self.W[conexao] = \
-                self.W[conexao] + learning_rate * np.dot(e_mat, output_mat.T)
+            self.W[camada] = \
+                self.W[camada] + learning_rate * np.dot(e_mat, output_mat.T)
             
 
             #atualização dos biais da camada de saída
-            self.biases[conexao] = \
-                self.biases[conexao]  + learning_rate * np.sum(e, axis=0, keepdims=True)
+            self.biases[camada] = \
+                self.biases[camada]  + learning_rate * np.sum(e, axis=0, keepdims=True)
 
-            error = np.dot(e, self.W[conexao]).sum() #erro da camada escondida          
+            error = np.dot(e, self.W[camada]).sum() #erro da camada escondida          
 
         
 
