@@ -53,18 +53,12 @@ class Net:
 
     def feedBackward(self, output, target, learning_rate):
         
-        #invertendo a lista self.conexoes, para indicar o caminho de retropropagação
-        b_camadas = [(self.num_de_camadas-1) - i for i in self.camadas]
-
-        #Foi necessário a retirada de 1 unidade de self.num_de_conexoes para que b_conexoes  
-        #representasse uma lista contabilizando o número de conexões com índice iniciando em 0  
-
         #a variável error da camada de saída 
         #é dada pela diferença entre o target e o a saída do neurônio  
               
         error = target - output    #erro da camada de saída        
         
-        for camada in b_camadas:  
+        for camada in reversed(self.camadas):  
             dif_FA = fa.tansig(self.sum_fa[camada], diff=True)
             e = np.dot(error, dif_FA)                
             #atualização dos pesos 
