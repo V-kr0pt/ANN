@@ -88,42 +88,97 @@ class Net:
             
         
 
-    def train(self, X, y, learning_rate=1e-3, goal= 1e-2, epochs = 10**3):
+    def train(self, X, y, learning_rate=1e-3, goal= 1e-2, epochs = 10**3):        
+        
+        #no primeiro momento para o caso específico dos dados seno
+        #divisão 25% validação e 75% treino
+        X_validation = X[0:17]
+        y_validation = y[0:17]     
+        X_train = X[18:]
+        y_train =  y[18:]        
         
         
         #array que irá conter os erros máximos do processo de treino
         self.train_error_max = np.array([])
 
+        #array que irá conter os erros máximos do processo de validação
+        self.validation_error_max = np.array([])
+
+        #inicialização do contador de épocas para validação
+        count = 0
+
         #treinamento
         for epoca in range(epochs):
-
+            
+            #array que irá armazenar os erros de treino referentes a cada saída
             self.train_error = np.array([])
+            
+            #array que irá armazenar os erros de validação referentes a cada saída
+            self.validation_error = np.array([])
 
             #Processo de atualização dos pesos
-            for i,x in enumerate(X): 
+            for i,x in enumerate(X_train): 
                 
+                #saída da rede neural para as entradas de treino
                 output = self.feedForward(x)
                 
-                tr_error = 1/2*(y[i]-output)**2                     
+                #cálculo do erro de treinamento (MSE)
+                train_error = 1/2 * (y_train[i] - output) ** 2        
                 
-                self.train_error = np.append(self.train_error, tr_error)
+                #salvando o erro no array de erro de treinamento
+                self.train_error = np.append(self.train_error, train_error)               
 
-                self.feedBackward(output, y[i], learning_rate)
+                #FeedBackward propagation
+                self.feedBackward(output, y_train[i], learning_rate)
 
-            print(self.train_error.max())
-            self.train_error_max = np.append(self.train_error_max, self.train_error.max())
-
-            #parada se o erro for menor ou igual ao desejado
-            if(self.train_error_max[-1] <= goal):
-                    break
             
-            #parada se a taxa de decrescimo do erro for menor que 0.001
-            if(epoca >= 1): 
+            #Processo de validação
+            for i,x in enumerate(X_validation):
 
-                taxa_de_decrescimo = self.train_error_max[-2] - self.train_error_max[-1]    
+                #saída da rede neural para as entradas de validação
+                output = self.feedForward(x)
+
+                #cálculo do erro de validação (MSE)
+                validation_error = 1/2 * (y_validation[i] - output) ** 2 
+
+                #salvando o erro no array de erro de validação
+                self.validation_error = np.append(self.validation_error, validation_error)   
+
+
+            #criando arrays com os erros máximos para serem plotados e avaliados
+            self.train_error_max = np.append(self.train_error_max, self.train_error.max())
+            self.validation_error_max = np.append(self.validation_error_max, self.validation_error.max())
+
+
+            #Critérios de parada:
+
+            #parada se o erro do treino for menor ou igual ao desejado
+            if(self.train_error_max[-1] <= goal):
+                    break            
+            
+            
+            if(epoca > 0): 
+                
+                #parada se a taxa de variação do erro de treino for maior que -0.001     
+                train_error_rate = self.train_error_max[-1] - self.train_error_max[-2]      
                
-                if(taxa_de_decrescimo < 1e-3):
+                if(train_error_rate < 1e-3):
                     break
+                
+                
+                #parada se a taxa de variação do erro de validação for positiva por 10 épocas
+                validation_error_rate = self.validation_error_max[-1] - self.validation_error_max[-2] 
+                
+                if(validation_error_rate >= 0):                                      
+                    count+=1
+                    
+                    if(count == 10):
+                        break
+                
+                else:                    
+                    count = 0
+
+                
                     
 
 
