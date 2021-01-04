@@ -84,18 +84,23 @@ class Net:
             self.biases[camada] = \
                 self.biases[camada]  + learning_rate * np.sum(e, axis=0, keepdims=True)
 
-            error = np.dot(e, self.W[camada]).sum() #erro da camada escondida          
+            error = np.dot(e, self.W[camada]).sum() #erro da camada escondida
+
+                  
             
         
 
-    def train(self, X, y, learning_rate=1e-3, goal= 1e-2, epochs = 10**3):        
+    def train(self, X, y, learning_rate=1e-3, goal= 1e-2, epochs = 10**3, validation_batch = 0.25):        
         
-        #no primeiro momento para o caso específico dos dados seno
+        #No primeiro momento realizando a divisão para o caso específico dos dados seno
         #divisão 25% validação e 75% treino
-        X_validation = X[0:17]
-        y_validation = y[0:17]     
-        X_train = X[18:]
-        y_train =  y[18:]        
+
+        data_length = int( validation_batch * len(X) )  
+
+        X_validation = X[0:data_length]
+        y_validation = y[0:data_length]     
+        X_train = X[data_length+1:]
+        y_train =  y[data_length+1:]        
         
         
         #array que irá conter os erros máximos do processo de treino
@@ -154,32 +159,45 @@ class Net:
 
             #parada se o erro do treino for menor ou igual ao desejado
             if(self.train_error_max[-1] <= goal):
+                    print("Treinamento parado pois o objetivo foi atingido!")
                     break            
             
             
             if(epoca > 0): 
-                
+                ''' 
                 #parada se a taxa de variação do erro de treino for maior que -0.001     
                 train_error_rate = self.train_error_max[-1] - self.train_error_max[-2]      
-               
-                if(train_error_rate < 1e-3):
+                
+                
+                if(train_error_rate > -1e-5):
+                    print("Treinamento parado pela variação do erro de treinamento")
                     break
+                '''
                 
-                
-                #parada se a taxa de variação do erro de validação for positiva por 10 épocas
+                #parada se a taxa de variação do erro de validação for não negativa por 100 épocas
                 validation_error_rate = self.validation_error_max[-1] - self.validation_error_max[-2] 
                 
                 if(validation_error_rate >= 0):                                      
                     count+=1
                     
                     if(count == 10):
+                        #retorna a melhor configuração da rede
+                        self.W = best_weigths
+                        self.biases = best_biases
+                        print("Treinamento parado pelo erro de validação")
                         break
                 
-                else:                    
+                else:
+                    #salva a melhor configuração da rede
+                    best_weigths = self.W
+                    best_biases = self.biases             
                     count = 0
+                print(f"erro de treinamento: {self.train_error_max[-1]}\nerro de validação: {self.validation_error_max[-1]}")
+        
+        print(f"\nmelhor erro de treinamento: {self.train_error_max.min()}\nmelhor erro de validação: {self.validation_error_max.min()}")
 
                 
-                    
+                          
 
 
 
@@ -201,15 +219,28 @@ if __name__ == '__main__':
     Xts = t[71:101] 
     yts = y[71:101]
 
-    for i in range(6):
+    for i in range(2):
         #Topologia da RNA
-        NN = Net([1,5,5,1])        
+        NN = Net([1,3,3,1])        
         
         #Treina a RNA
-        NN.train(Xtr, ytr, learning_rate=1e-5, goal=1e-2, epochs=10**4)
+        NN.train(Xtr, ytr, learning_rate=1e-3, goal=1e-2, epochs=10**4, validation_batch=0.3)
         
-        plt.plot(range(NN.train_error_max.shape[0]), NN.train_error_max, label=f"treinamento {i}")
-    
+        #plot do gráfico dos erros de treinamento e validação
+
+        #vetor respectivo ao tamanho do vetor de erros de treino
+        train_length = np.arange(len(NN.train_error_max))
+
+        #vetor respectivo ao tamanho do vetor de erros de validação
+        validation_lenght = np.arange(len(NN.validation_error_max))
+
+        plt.plot(train_length, NN.train_error_max, label = f"treinamento {i}")
+        plt.plot(validation_lenght, NN.validation_error_max, label = f"validação {i}")
+
+
+
+    plt.xlabel("epochs")
+    plt.ylabel("MSE")    
     plt.legend()
     plt.show()
 
@@ -225,7 +256,7 @@ if __name__ == '__main__':
         error_ts = abs(yts - output)
         #print(error_ts.max())
         
-        if(error_ts.max() <= 0.02):
+        if(error_ts.max() <= 0.06):
             NNBest = NN
             print("ACHOU!")
             break
