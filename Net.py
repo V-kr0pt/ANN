@@ -92,73 +92,70 @@ class Net:
 
     def train(self, X, y, learning_rate=1e-3, goal= 1e-2, epochs = 10**3, validation_batch = 0.25):        
         
-        #No primeiro momento realizando a divisão para o caso específico dos dados seno
-        #divisão 25% validação e 75% treino
+        #Divisão dos dados em 25% de validação e 75% de treino
+        #Nesse primeiro momento foi feita a divisão para o caso específico dos dados seno
 
-        data_length = int( validation_batch * len(X) )  
+        data_length = int(validation_batch*len(X))  
 
         X_validation = X[0:data_length]
         y_validation = y[0:data_length]     
         X_train = X[data_length+1:]
         y_train =  y[data_length+1:]        
-        
-        
-        #array que irá conter os erros máximos do processo de treino
-        self.train_error_max = np.array([])
 
-        #array que irá conter os erros máximos do processo de validação
-        self.validation_error_max = np.array([])
 
-        #inicialização do contador de épocas para validação
+        #array que irá armazenar os erros médios quadráticos de treino referentes a cada época
+        self.train_mse = np.array([]) 
+
+        #array que irá armazenar os erros de validação referentes a cada época
+        self.validation_mse = np.array([])  
+
+        #inicializando o erro de treinamento
+        train_error = 0
+
+        #inicializando o erro de validação
+        validation_error = 0
+        
+        #inicialização do contador de épocas para verificar a taxa de variação do erro de validação
         count = 0
 
         #treinamento
         for epoca in range(epochs):
-            
-            #array que irá armazenar os erros de treino referentes a cada saída
-            self.train_error = np.array([])
-            
-            #array que irá armazenar os erros de validação referentes a cada saída
-            self.validation_error = np.array([])
 
             #Processo de atualização dos pesos
-            for i,x in enumerate(X_train): 
-                
+            for i,x in enumerate(X_train):                 
                 #saída da rede neural para as entradas de treino
                 output = self.feedForward(x)
                 
                 #cálculo do erro de treinamento (MSE)
-                train_error = 1/2 * (y_train[i] - output) ** 2        
-                
-                #salvando o erro no array de erro de treinamento
-                self.train_error = np.append(self.train_error, train_error)               
+                train_error += (y_train[i] - output) ** 2                    
 
                 #FeedBackward propagation
                 self.feedBackward(output, y_train[i], learning_rate)
 
+            #O erro médio da época:
+            train_error /= len(X_train) 
+
+            #salvando o erro no array de erro de treinamento
+            self.train_mse = np.append(self.train_mse, train_error)   
             
             #Processo de validação
             for i,x in enumerate(X_validation):
-
                 #saída da rede neural para as entradas de validação
                 output = self.feedForward(x)
 
                 #cálculo do erro de validação (MSE)
-                validation_error = 1/2 * (y_validation[i] - output) ** 2 
+                validation_error += (y_validation[i] - output) ** 2 
 
-                #salvando o erro no array de erro de validação
-                self.validation_error = np.append(self.validation_error, validation_error)   
-
-
-            #criando arrays com os erros máximos para serem plotados e avaliados
-            self.train_error_max = np.append(self.train_error_max, self.train_error.max())
-            self.validation_error_max = np.append(self.validation_error_max, self.validation_error.max())
+            validation_error /= len(X_validation)
+            
+            #salvando o erro no array de erro de validação da época
+            self.validation_mse = np.append(self.validation_mse, validation_error)   
 
 
             #Critérios de parada:
 
             #parada se o erro do treino for menor ou igual ao desejado
-            if(self.train_error_max[-1] <= goal):
+            if(train_error <= goal):
                     print("Treinamento parado pois o objetivo foi atingido!")
                     break            
             
@@ -174,8 +171,8 @@ class Net:
                     break
                 '''
                 
-                #parada se a taxa de variação do erro de validação for não negativa por 100 épocas
-                validation_error_rate = self.validation_error_max[-1] - self.validation_error_max[-2] 
+                #parada se a taxa de variação do erro de validação for não negativa por 10 épocas
+                validation_error_rate = self.validation_mse[-1] - self.validation_mse[-2] 
                 
                 if(validation_error_rate >= 0):                                      
                     count+=1
@@ -192,14 +189,14 @@ class Net:
                     best_weigths = self.W
                     best_biases = self.biases             
                     count = 0
-                print(f"erro de treinamento: {self.train_error_max[-1]}\nerro de validação: {self.validation_error_max[-1]}")
+
+            #apresentando os erros das épocas            
+            print(f"erro de treinamento: {train_error}\nerro de validação: {validation_error}")
         
-        print(f"\nmelhor erro de treinamento: {self.train_error_max.min()}\nmelhor erro de validação: {self.validation_error_max.min()}")
-
-                
+        #apresentando os menores erros obtidos pelo treinamento
+        print(f"\nmelhor erro de treinamento: {self.train_mse.min()}\nmelhor erro de validação: {self.validation_mse.min()}")
+  
                           
-
-
 
 
 if __name__ == '__main__':
@@ -219,7 +216,7 @@ if __name__ == '__main__':
     Xts = t[71:101] 
     yts = y[71:101]
 
-    for i in range(2):
+    for i in range(3):
         #Topologia da RNA
         NN = Net([1,3,3,1])        
         
@@ -229,13 +226,13 @@ if __name__ == '__main__':
         #plot do gráfico dos erros de treinamento e validação
 
         #vetor respectivo ao tamanho do vetor de erros de treino
-        train_length = np.arange(len(NN.train_error_max))
+        train_mse_length = np.arange(len(NN.train_mse))
 
         #vetor respectivo ao tamanho do vetor de erros de validação
-        validation_lenght = np.arange(len(NN.validation_error_max))
+        validation_mse_length = np.arange(len(NN.validation_mse))
 
-        plt.plot(train_length, NN.train_error_max, label = f"treinamento {i}")
-        plt.plot(validation_lenght, NN.validation_error_max, label = f"validação {i}")
+        plt.plot(train_mse_length, NN.train_mse, label = f"treinamento {i}")
+        plt.plot(validation_mse_length, NN.validation_mse, label = f"validação {i}")
 
 
 
