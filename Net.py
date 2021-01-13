@@ -217,6 +217,12 @@ if __name__ == '__main__':
     yts = y[70:100]
 
 
+    #Figura para o gráfico dos erros:
+    fig, ax = plt.subplots(figsize= (18,8))
+    ax.set_xlabel("Época", fontsize=15)
+    ax.set_ylabel("Erro Médio Quadrático", fontsize=15, rotation=90)
+    ax.tick_params(labelsize=15)
+    ax.tick_params(labelsize=15)
 
     for i in range(1):
         #Topologia da RNA
@@ -233,15 +239,13 @@ if __name__ == '__main__':
         #vetor respectivo ao tamanho do vetor de erros de validação
         validation_mse_length = np.arange(len(NN.validation_mse))
 
-        plt.plot(train_mse_length, NN.train_mse, 'b', label = f"erro de treinamento")
-        plt.plot(validation_mse_length, NN.validation_mse, 'r', label = f"erro de validação")
+        ax.plot(train_mse_length, NN.train_mse, 'b', label = f"erro de treinamento")
+        ax.plot(validation_mse_length, NN.validation_mse, 'r', label = f"erro de validação")
 
 
-
-    plt.xlabel("Épocas", fontsize=15)
-    plt.ylabel("Erro Médio Quadrático", fontsize=15)    
-    plt.grid()
-    plt.legend()
+ 
+    ax.grid()
+    ax.legend(fontsize = 20)
     plt.show()
 
         
