@@ -177,7 +177,7 @@ class Net:
                 if(validation_error_rate >= 0):                                      
                     count+=1
                     
-                    if(count == 10):
+                    if(count == 100):
                         #retorna a melhor configuração da rede
                         self.W = best_weigths
                         self.biases = best_biases
@@ -201,7 +201,7 @@ class Net:
 
 if __name__ == '__main__':
     
-    t_d = np.linspace(0, 2*np.pi, 101) #ângulo em radianos  
+    t_d = np.linspace(0, 2*np.pi, 100) #ângulo em radianos  
     t = np.random.permutation(t_d) #permutando-o randomicamente
     y = np.sin(t)    #Função seno
     
@@ -213,10 +213,12 @@ if __name__ == '__main__':
     ytr = y[0:70]
 
     #Os vetores de teste:
-    Xts = t[71:101] 
-    yts = y[71:101]
+    Xts = t[70:100] 
+    yts = y[70:100]
 
-    for i in range(3):
+
+
+    for i in range(1):
         #Topologia da RNA
         NN = Net([1,3,3,1])        
         
@@ -231,13 +233,14 @@ if __name__ == '__main__':
         #vetor respectivo ao tamanho do vetor de erros de validação
         validation_mse_length = np.arange(len(NN.validation_mse))
 
-        plt.plot(train_mse_length, NN.train_mse, label = f"treinamento {i}")
-        plt.plot(validation_mse_length, NN.validation_mse, label = f"validação {i}")
+        plt.plot(train_mse_length, NN.train_mse, 'b', label = f"erro de treinamento")
+        plt.plot(validation_mse_length, NN.validation_mse, 'r', label = f"erro de validação")
 
 
 
-    plt.xlabel("epochs")
-    plt.ylabel("MSE")    
+    plt.xlabel("Épocas", fontsize=15)
+    plt.ylabel("Erro Médio Quadrático", fontsize=15)    
+    plt.grid()
     plt.legend()
     plt.show()
 
