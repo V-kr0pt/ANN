@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import Funcoes_de_Ativacao as fa
 
-class Net:
+class ANN:
     
     def __init__(self, neuronios):
         
