@@ -19,12 +19,9 @@ def criar_figuras():
 
 def plot_figuras():
 
-    best_train_mse_length = np.arange(len(NNBest.train_mse))
-    best_validation_mse_length = np.arange(len(NNBest.validation_mse))
-
     #plot do gráfico do melhor resultado obtido
-    ax1.plot(best_train_mse_length, NNBest.train_mse, 'b', label = f"erro do treinamento {n+1}") 
-    ax1.plot(best_validation_mse_length, NNBest.validation_mse, 'r', label = f"erro de validação {n+1}")
+    ax1.plot(NNBest.train_mse, 'b', label = f"erro do treinamento {n+1}") 
+    ax1.plot(NNBest.validation_mse, 'r', label = f"erro de validação {n+1}")
     ax1.legend(fontsize = 20)
     ax1.grid() 
 
@@ -61,7 +58,7 @@ criar_figuras()
 array_test_error = np.array([2]) #o erro inicial será "2"
 
 #selecionando a quantidade de testes desejada
-test_count = 50
+test_count = 3
 
 for i in range(test_count):
 
