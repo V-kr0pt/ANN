@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Net import ANN 
 
+
 def criar_figuras():
     
     #figura para apresentar a melhor curva de treinamento e validação
@@ -30,11 +31,18 @@ def plot_figuras():
     ax2.legend(fontsize = 20)
     ax2.grid()
 
+    #plot do gráfico do seno para comparação
+    plt.stem(Xtr, ytr, 'b', markerfmt='bo', label='treino')
+    plt.stem(Xts, yts,'g', markerfmt='go', label='teste')
+    plt.stem(Xts, output, 'r', markerfmt='ro', label='output')
+    plt.legend()
+
 
 #Criando o banco de dados: função seno
 t_d = np.linspace(0, 2*np.pi, 100) #ângulo em radianos  
 t = np.random.permutation(t_d) #permutando-o randomicamente
 y = np.sin(t)    #Função seno
+
 
 #Divisão dos dados em treino e teste:
 #treino 70% - teste 30%
@@ -51,8 +59,9 @@ yts = y[70:100]
 #Inicialização dos gráficos:
 fig1, ax1 = plt.subplots(figsize=(18,8))
 fig2, ax2 = plt.subplots(figsize=(18,8)) 
+fig3, ax3 = plt.subplots(figsize=(18,8))
 criar_figuras()
-    
+  
 
 #inicializando o array de erro mínimo encontrado
 array_test_error = np.array([2]) #o erro inicial será "2"
@@ -97,15 +106,8 @@ for i in range(test_count):
     #Salvando o erro de teste no vetor
     array_test_error = np.append(array_test_error, test_error.max())
 
+
 #plotando os gráficos
 plot_figuras()
-
-'''
-plt.stem(Xtr, ytr, 'b', markerfmt='bo', label='treino')
-plt.stem(Xts, yts,'g', markerfmt='go', label='teste')
-plt.stem(Xts, output, 'r', markerfmt='ro', label='output')
-plt.legend()
-'''
-
 plt.show()
 
