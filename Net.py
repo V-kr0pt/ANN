@@ -195,10 +195,5 @@ class ANN:
         
         #apresentando os menores erros obtidos pelo treinamento
         print(f"\nmelhor erro de treinamento: {self.train_mse.min()}\nmelhor erro de validação: {self.validation_mse.min()}")
-  
-                          
 
-
-if __name__ == '__main__':
-    print("carregamento completo.")
     
