@@ -67,7 +67,7 @@ criar_figuras()
 array_test_error = np.array([2]) #o erro inicial será "2"
 
 #selecionando a quantidade de testes desejada
-test_count = 3
+test_count = 50
 
 for i in range(test_count):
 
@@ -75,7 +75,7 @@ for i in range(test_count):
     NN = ANN([1,3,3,1])        
     
     #Treinando a RNA
-    NN.train(Xtr, ytr, learning_rate=1e-3, goal=1e-2, epochs=10**3, validation_batch=0.3)    
+    NN.train(Xtr, ytr, learning_rate=0.05, goal=1e-3, epochs=10**3, validation_batch=0.3)    
     
     #Teste da RNA
 

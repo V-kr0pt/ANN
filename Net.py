@@ -25,23 +25,23 @@ class ANN:
             W *= 0.1 #garantido pesos inicializados <= |0.1| 
             self.W.append(W) #salva na lista
 
-            biases =  0.1 * np.random.rand(neuronios[camada+1]) #bias randômicos            
+            biases =  0.1 * np.random.rand(neuronios[camada+1], 1) #bias randômicos            
             self.biases.append(biases) #salva na lista
         
 
     def feedForward(self, x):
-        self.x = np.array([x]) 
+        self.x = np.array([[x]]) 
 
         #listas para deixar salvo as saídas e as somas das entradas dos neurônios
         self.output = [] 
         self.sum_fa = []
         
-        #generalizando, a saída do neurônio de entrada é a prórpia entrada 
+        #a saída do neurônio de entrada é a prórpia entrada 
         self.output.append(self.x) 
                 
         for camada in self.camadas:
              
-            sum_fa =  np.dot(self.W[camada], self.output[camada]) + self.biases[camada]       
+            sum_fa =  np.dot(self.W[camada], self.output[camada]) + self.biases[camada]    
             output = fa.tansig(sum_fa)           
             
             self.sum_fa.append(sum_fa)
@@ -52,39 +52,33 @@ class ANN:
         
 
     def feedBackward(self, output, target, learning_rate):
-        
-        #a variável error da camada de saída 
-        #é dada pela diferença entre o target e o a saída do neurônio  
-              
-        error = target - output       #erro da camada de saída        
-        
+
+        #erro da camada de saída  
+        error = (target - output)               
         
         for camada in reversed(self.camadas):  
+
+            #derivada da função de ativação (transformado para matriz coluna)
             dif_FA = fa.tansig(self.sum_fa[camada], diff=True)
-            e = np.dot(error, dif_FA)
+            
+            #matriz e_nxn
+            e_nxn = np.dot(error, dif_FA.T)
+
+            #vetor delta (e) 
+            e = np.diag(e_nxn) #retorna a diagonal da matriz nxn
+            e = np.vstack(e) #transforma a matriz "e" em matriz coluna
                             
             #atualização dos pesos 
-            
-            #transformando vetores de saída em matrizes coluna 
-            output_rows = self.output[camada].shape[0]
-            output_mat = self.output[camada].reshape((output_rows,1))
-            
-            #transformando os vetores "e", em matrizes coluna
-            if e.shape:  #se for um vetor
-                e_rows = e.shape[0] #recebe o número de linhas
-                e_mat = e.reshape((e_rows,1)) #retorna uma matriz coluna
-            else:
-                e_mat = e
-            
+                        
             self.W[camada] = \
-                self.W[camada] + learning_rate * np.dot(e_mat, output_mat.T)
+                self.W[camada] + learning_rate * np.dot(e, self.output[camada].T)
             
 
             #atualização dos biais da camada de saída
             self.biases[camada] = \
                 self.biases[camada]  + learning_rate * np.sum(e, axis=0, keepdims=True)
 
-            error = np.dot(e, self.W[camada]).sum() #erro da camada escondida
+            error = np.dot(self.W[camada].T, e) #erro da camada escondida
 
                   
             
